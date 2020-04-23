@@ -1,0 +1,3 @@
+[submodule "pi-mqtt-gpio"]
+	path = pi-mqtt-gpio
+	url = git@github.com:w4tsn/pi-mqtt-gpio.git
