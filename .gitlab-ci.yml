@@ -1,11 +1,9 @@
-image: registry.gitlab.com/othermo/fedora-build:latest
+image: quay.io/sheogorath/build-ah-engine
 
 variables:
   GIT_SUBMODULE_STRATEGY: 'recursive'
 
 before_script:
-  - git config --global user.email "info@othermo.de"
-  - git config --global user.name "Othermo CI"
   - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 build-master:
