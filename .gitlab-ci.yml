@@ -6,25 +6,44 @@ variables:
 before_script:
   - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
-build-master:
+build-aarch64:
+  stage: build
   script:
-    - podman pull $CI_REGISTRY_IMAGE:latest || true
-    - podman build --layers=false --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG --tag $CI_REGISTRY_IMAGE:latest .
-    - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-    - podman push $CI_REGISTRY_IMAGE:latest
-  only:
-    # this build script would conflict with other branches
-    - master
+    - podman pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" || true
+    - podman build --layers=false --cache-from "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" .
+    - podman push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64"
   tags:
     - aarch64
 
-build:
+build-amd64:
+  stage: build
   script:
-    - podman pull $CI_REGISTRY_IMAGE:latest || true
-    - podman build --layers=false --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
-    - podman push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    - podman pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64" || true
+    - podman build --layers=false --cache-from "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64" --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64" .
+    - podman push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64"
+  tags:
+    - x86_64
+
+deploy:
+  stage: deploy
+  script:
+    - podman pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64"
+    - podman pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64"
+    - podman manifest create $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64" 
+    - podman manifest push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   except:
-    # this build script would conflict with other branches
     - master
   tags:
-    - aarch64
+    - x86_64
+
+deploy-master:
+  stage: deploy
+  script:
+    - podman pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64"
+    - podman pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64"
+    - podman manifest create $CI_REGISTRY_IMAGE" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-amd64" 
+    - podman manifest push "$CI_REGISTRY_IMAGE"
+  only:
+    - master
+  tags:
+    - x86_64
