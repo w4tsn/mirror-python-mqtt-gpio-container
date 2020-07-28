@@ -1,15 +1,21 @@
-image: registry.gitlab.com/othermo/fedora-build:latest
+image: quay.io/sheogorath/build-ah-engine
 
 variables:
   GIT_SUBMODULE_STRATEGY: 'recursive'
 
 before_script:
-  - git config --global user.email "info@othermo.de"
-  - git config --global user.name "Othermo CI"
   - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 build-aarch64:
+  image: docker.io/library/fedora:32
   stage: build
+  before_script:
+    # Build engine for aarch64
+    - dnf install -y git podman buildah findutils
+    - sed -e 's/cgroup_manager =.*/cgroup_manager = "cgroupfs"/' /usr/share/containers/containers.conf > /etc/containers/containers.conf
+    - git config --global user.email "info@othermo.de"
+    - git config --global user.name "Othermo CI"
+    - cp storage.conf /etc/containers/storage.conf
   script:
     - podman pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" || true
     - podman build --layers=false --cache-from "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" --tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-aarch64" .
