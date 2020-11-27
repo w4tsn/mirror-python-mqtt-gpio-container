@@ -1,3 +1,3 @@
 [submodule "python-mqtt-gpio"]
 	path = python-mqtt-gpio
-	url = ssh://git@git.shivering-isles.com:2222/w4tsn/python-mqtt-gpio.git
+	url = https://git.shivering-isles.com/w4tsn/python-mqtt-gpio.git
