@@ -1,4 +1,4 @@
-image: quay.io/othermo/build-ah-engine
+image: quay.io/sheogorath/build-ah-engine
 
 variables:
   GIT_SUBMODULE_STRATEGY: 'recursive'
