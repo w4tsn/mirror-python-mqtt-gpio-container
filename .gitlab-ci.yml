@@ -1,7 +1,9 @@
 include:
-  remote: https://git.shivering-isles.com/container-library/build-ah-engine/-/raw/feature/multiarch/gitlab-ci-template.yml
+  - project: 'container-library/build-ah-engine'
+    ref: 2.0.0
+    file: '/gitlab-ci-template.yml'
 
 variables:
   GIT_SUBMODULE_STRATEGY: 'recursive'
   CI_CONTAINER_BUILD_ARCHS: "amd64:arm64"
-  CI_REGISTRY_IMAGE_VERSION: "0.5.2 --suffix=-1"
+  CI_REGISTRY_IMAGE_VERSION: "0.5.2"
