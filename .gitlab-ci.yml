@@ -1,6 +1,6 @@
 include:
   - project: 'container-library/build-ah-engine'
-    ref: 2.0.0
+    ref: feature/multiarch
     file: '/gitlab-ci-template.yml'
 
 variables:
