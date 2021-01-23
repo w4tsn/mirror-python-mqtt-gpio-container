@@ -1,9 +1,25 @@
 include:
   - project: 'container-library/build-ah-engine'
     ref: feature/multiarch
-    file: '/gitlab-ci-template.yml'
+    file: '/gitlab-ci-template-manifest.yml'
+
+stages:
+  - build
+  - tag
 
 variables:
   GIT_SUBMODULE_STRATEGY: 'recursive'
-  CI_CONTAINER_BUILD_ARCHS: "amd64:arm64"
   CI_REGISTRY_IMAGE_VERSION: "0.5.2"
+
+container-build-x86_64:
+  extends: .container-build
+  tags:
+    - x86_64
+
+container-build-aarch64:
+  extends: .container-build
+  tags:
+    - aarch64
+
+container-manifest:
+  stage: tag
