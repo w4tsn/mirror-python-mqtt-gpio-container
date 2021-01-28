@@ -1,4 +1,4 @@
-FROM docker.io/library/fedora:32
+FROM docker.io/library/fedora:33
 
 COPY python-mqtt-gpio/ /var/srv/python-mqtt-gpio/
 
